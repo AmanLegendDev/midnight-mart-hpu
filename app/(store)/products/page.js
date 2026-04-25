@@ -1,5 +1,5 @@
 "use client";
-export const dynamic = "force-dynamic";
+
 
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
@@ -22,28 +22,40 @@ useState([]);
 
 useEffect(() => {
 
-const fetchProducts = async () => {
+const fetchData = async () => {
 
 try {
 
-const res = await fetch(
-process.env.NEXT_PUBLIC_BASE_URL +
-"/api/store/products"
+const productsRes = await fetch(
+"/api/store/products",
+{ cache: "no-store" }
 );
 
-const data = await res.json();
+const productsData =
+await productsRes.json();
 
-setProducts(data);
+setProducts(productsData);
+
+
+const categoriesRes = await fetch(
+"/api/categories/dropdown",
+{ cache: "no-store" }
+);
+
+const categoriesData =
+await categoriesRes.json();
+
+setCategories(categoriesData);
 
 } catch (err) {
 
-console.error("Product fetch failed");
+console.error("Fetch failed", err);
 
 }
 
 };
 
-fetchProducts();
+fetchData();
 
 }, []);
 
