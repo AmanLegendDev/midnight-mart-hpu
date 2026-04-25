@@ -1,5 +1,5 @@
 "use client";
-
+export const dynamic = "force-dynamic";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useCartStore } from "@/store/cartStore";
@@ -31,7 +31,9 @@ useState(false);
 
 useEffect(() => {
 
-fetch(`/api/store/product/${slug}`)
+fetch(`/api/store/product/${slug}`, {
+  cache: "no-store"
+})
 .then(res => res.json())
 .then(data => {
 
@@ -53,7 +55,9 @@ useEffect(() => {
 
 if (!product?.category?._id) return;
 
-fetch("/api/store/products")
+fetch("/api/store/products", {
+  cache: "no-store"
+})
 .then(res => res.json())
 .then(data => {
 
