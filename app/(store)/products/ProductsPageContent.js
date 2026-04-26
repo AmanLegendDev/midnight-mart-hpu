@@ -64,19 +64,22 @@ fetchData();
 
 
 // FILTERED PRODUCTS MODE
-
-const filteredProducts = selectedCategory
-? products.filter(
-p =>
-p.category?._id?.toString() === selectedCategory
-)
-: [];
 if (!products)
 return (
 <div className="p-10 text-center">
 Loading products...
 </div>
 );
+
+const filteredProducts = selectedCategory && products
+? products.filter(
+p =>
+p.category?._id?.toString() === selectedCategory
+)
+: [];
+
+
+
 
 
 return (
