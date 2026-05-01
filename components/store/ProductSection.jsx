@@ -10,15 +10,14 @@ export default function ProductSection() {
 
 const [products,setProducts]=useState([]);
 const [filtered,setFiltered]=useState([]);
-const [added,setAdded]=useState(null);
 
-const addToCart=useCartStore(state=>state.addToCart);
-const cart=useCartStore(state=>state.cart);
+const {
+cart,
+addToCart,
+increaseQty,
+decreaseQty
+} = useCartStore();
 
-
-/*
-FETCH PRODUCTS
-*/
 
 useEffect(()=>{
 
@@ -32,9 +31,6 @@ setFiltered(data);
 },[]);
 
 
-/*
-CATEGORY FILTER LISTENER
-*/
 
 useEffect(()=>{
 
@@ -43,14 +39,20 @@ const listener=(e)=>{
 const categoryId=e.detail;
 
 if(categoryId==="all"){
+
 setFiltered(products);
 return;
+
 }
 
 setFiltered(
+
 products.filter(
+
 p=>p.category?._id===categoryId
+
 )
+
 );
 
 };
@@ -68,29 +70,23 @@ listener
 },[products]);
 
 
-/*
-ADD TO CART HANDLER
-*/
 
-const handleAdd=(product)=>{
+const getQty = (id) => {
 
-addToCart(product);
+const item = cart.find(i => i._id === id);
 
-setAdded(product._id);
-
-setTimeout(()=>{
-setAdded(null);
-},2000);
+return item ? item.qty : 0;
 
 };
 
 
-/*
-TOTAL ITEMS
-*/
-
-const totalItems=cart.reduce(
+const totalItems = cart.reduce(
 (acc,item)=>acc+item.qty,
+0
+);
+
+const totalPrice = cart.reduce(
+(acc,item)=>acc + item.sellingPrice * item.qty,
 0
 );
 
@@ -100,36 +96,30 @@ return(
 <section className="bg-[#020617] text-white px-4 pt-2 pb-32 mt-6">
 
 
-{/* GRID */}
-
 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
 
 
-{filtered.map(product=>(
+{filtered.map(product=>{
+
+const qty = getQty(product._id);
+
+return(
 
 <div
-
 key={product._id}
-
-className="bg-[#020617] border border-white/10 rounded-2xl p-3 shadow-sm flex flex-col"
-
+className="bg-[#020617] border border-white/10 rounded-2xl p-3 shadow-md hover:border-yellow-400 transition flex flex-col"
 >
 
 
-{/* IMAGE BLOCK */}
+{/* IMAGE */}
 
-<div className="relative w-full aspect-square rounded-xl bg-[#020617] border border-white/5 overflow-hidden">
+<div className="relative w-full aspect-square rounded-xl bg-black/20 overflow-hidden">
 
 <Image
-
-src={product.image || "/placeholder.png"}
-
+src={product.image}
 fill
-
 alt={product.name}
-
-className="object-contain p-2"
-
+className="object-contain p-3"
 />
 
 </div>
@@ -137,7 +127,7 @@ className="object-contain p-2"
 
 {/* TITLE */}
 
-<h3 className="text-sm font-medium mt-2 line-clamp-2">
+<h3 className="text-sm font-semibold mt-2 line-clamp-2">
 
 {product.name}
 
@@ -146,100 +136,136 @@ className="object-contain p-2"
 
 {/* DESCRIPTION */}
 
-<p className="text-xs text-neutral-400 line-clamp-2 mt-1 min-h-[32px]">
+<p className="text-xs text-neutral-400 line-clamp-2 mt-1 min-h-[30px]">
 
 {product.description}
 
 </p>
 
 
-{/* PRICE + BUTTON ROW */}
+{/* PRICE + CART CONTROL */}
 
-<div className="flex justify-between items-center mt-2">
+<div className="flex justify-between items-center mt-3">
 
 
-<span className="text-yellow-400 text-sm font-semibold">
+<span className="text-yellow-400 font-semibold text-sm">
 
 ₹ {product.sellingPrice}
 
 </span>
 
 
+{qty === 0 ? (
+
 <button
 
-onClick={()=>handleAdd(product)}
+onClick={()=>addToCart(product)}
 
-className={`
-
-text-xs font-semibold px-3 py-1.5 rounded-lg transition
-
-${added===product._id
-
-? "bg-green-500 text-white"
-
-: "bg-yellow-400 text-black"}
-
-`}
+className="bg-yellow-400 text-black text-xs px-3 py-1.5 rounded-lg font-semibold"
 
 >
 
-{added===product._id
-
-? "Added ✔"
-
-: "ADD"}
+ADD
 
 </button>
 
+) : (
+
+<div className="flex items-center gap-2 bg-yellow-400 text-black rounded-lg px-2 py-1">
+
+<button
+onClick={()=>decreaseQty(product._id)}
+className="font-bold text-lg"
+>
+
+−
+
+</button>
+
+<span className="text-sm font-semibold">
+
+{qty}
+
+</span>
+
+<button
+onClick={()=>increaseQty(product._id)}
+className="font-bold text-lg"
+>
+
++
+
+</button>
+
+</div>
+
+)}
+
 
 </div>
 
 
 </div>
 
-))}
+);
+
+})}
 
 
 </div>
 
 
-{/* STICKY CART POPUP */}
+{/* STICKY CART BAR */}
 
 <AnimatePresence>
 
-{totalItems>0 &&(
+{totalItems > 0 && (
 
 <motion.div
 
-initial={{y:120,opacity:0}}
+initial={{ y:120, opacity:0 }}
 
-animate={{y:0,opacity:1}}
+animate={{ y:0, opacity:1 }}
 
-exit={{y:120,opacity:0}}
+exit={{ y:120, opacity:0 }}
 
-transition={{duration:.25}}
+transition={{ duration:.25 }}
 
-className="fixed bottom-4 left-1/2 -translate-x-1/2 w-[92%] max-w-md bg-yellow-400 text-black rounded-2xl px-5 py-3 shadow-xl flex justify-between items-center"
+className="fixed bottom-4 left-1/2 -translate-x-1/2 w-[94%] max-w-md bg-yellow-400 text-black rounded-2xl px-5 py-3 shadow-xl flex justify-between items-center"
 
 >
 
 
-<div className="text-sm font-semibold">
+{/* LEFT SIDE */}
 
-{totalItems} items added
+<div className="flex flex-col leading-tight">
+
+<span className="text-sm font-semibold">
+
+{totalItems} item{totalItems > 1 && "s"}
+
+</span>
+
+<span className="text-xs font-medium opacity-80">
+
+₹ {totalPrice}
+
+</span>
 
 </div>
 
+
+{/* BUTTON */}
 
 <Link
 
 href="/cart"
 
-className="bg-black text-yellow-400 px-4 py-2 rounded-lg text-sm font-semibold"
+className="bg-black text-yellow-400 px-4 py-2 rounded-lg text-sm font-semibold hover:scale-105 transition"
 
 >
 
-Proceed
+View Cart →
 
 </Link>
 

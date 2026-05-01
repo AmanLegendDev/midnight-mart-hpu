@@ -2,302 +2,228 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useCartStore } from "@/store/cartStore";
+import { motion } from "framer-motion";
+import Image from "next/image";
 
 export default function SuccessPage() {
 
-const [order, setOrder] = useState(null);
-const resetCart = useCartStore((state) => state.resetCart);
+const [order,setOrder]=useState(null);
 
-useEffect(() => {
+/*
+LOAD ORDER
+*/
+
+useEffect(()=>{
 
 const storedOrder =
 localStorage.getItem("lastOrder");
 
-if (storedOrder) {
+if(storedOrder){
 
 setOrder(JSON.parse(storedOrder));
 
-resetCart(); // cart clear here
-
 }
 
-}, []);
+},[]);
 
 
+/*
+LOADING SCREEN
+*/
 
-if (!order) {
+if(!order){
 
-return (
+return(
 
-<p className="text-center py-20">
+<section className="min-h-screen flex items-center justify-center bg-[#020617] text-white">
 
-Loading order details...
+Loading order...
 
-</p>
+</section>
 
 );
 
 }
 
 
+/*
+SUCCESS UI
+*/
 
-return (
+return(
 
-<section className="bg-secondary min-h-screen">
+<section className="min-h-screen bg-[#020617] text-white flex flex-col items-center justify-center px-6 text-center">
 
-<div className="max-w-4xl mx-auto px-6 py-20">
 
+{/* SPINNING LOGO */}
 
-{/* SUCCESS HEADER */}
+<motion.div
 
-<div className="text-center">
+animate={{rotate:360}}
 
-<div className="text-6xl">
+transition={{
+repeat:Infinity,
+duration:6,
+ease:"linear"
+}}
 
-✅
-
-</div>
-
-<h1 className="text-3xl font-semibold text-primary mt-4">
-
-Order Confirmed Successfully
-
-</h1>
-
-<p className="text-neutral-500 mt-2">
-
-Thank you {order.customerName}, your order has been placed successfully.
-
-</p>
-
-</div>
-
-
-
-{/* CUSTOMER INFO */}
-
-<div className="bg-white shadow-soft rounded-2xl mt-10 p-6">
-
-<h2 className="text-lg font-semibold text-primary mb-4">
-
-Customer Details
-
-</h2>
-
-<p>
-
-Name: {order.customerName}
-
-</p>
-
-<p>
-
-Phone: {order.phone}
-
-</p>
-
-<p>
-
-Address: {order.address}
-
-</p>
-
-</div>
-
-
-
-{/* ORDER SUMMARY */}
-
-<div className="bg-white shadow-soft rounded-2xl mt-10 p-6">
-
-<h2 className="text-lg font-semibold text-primary mb-4">
-
-Order Summary
-
-</h2>
-
-
-{order.items.map((item, i) => (
-
-<div
-key={i}
-className="flex justify-between border-b py-2"
->
-
-<span>
-
-{item.title} × {item.qty}
-
-</span>
-
-<span>
-
-₹{item.price * item.qty}
-
-</span>
-
-</div>
-
-))}
-
-
-<div className="flex justify-between mt-4 text-lg font-semibold">
-
-<span>Total Amount</span>
-
-<span>
-
-₹{order.totalAmount}
-
-</span>
-
-</div>
-
-</div>
-
-
-
-{/* PAYMENT INFO */}
-
-<div className="bg-white shadow-soft rounded-2xl mt-10 p-6 space-y-4">
-
-<div className="flex justify-between">
-
-<span>Payment Method</span>
-
-<span>
-
-{order.paymentMethod}
-
-</span>
-
-</div>
-
-
-<div className="flex justify-between">
-
-<span>Payment Status</span>
-
-<span className="text-green-600">
-
-{order.paymentStatus}
-
-</span>
-
-</div>
-
-
-<div className="flex justify-between">
-
-<span>Order Status</span>
-
-<span className="text-primary">
-
-{order.orderStatus}
-
-</span>
-
-</div>
-
-</div>
-
-
-
-{/* DELIVERY INFO */}
-
-<div className="bg-white shadow-soft rounded-2xl mt-10 p-6">
-
-<h2 className="text-lg font-semibold text-primary mb-2">
-
-Estimated Delivery
-
-</h2>
-
-<p>
-
-2–5 Working Days
-
-</p>
-
-<p className="mt-2 text-neutral-500 text-sm">
-
-Our team may contact you before dispatch.
-
-</p>
-
-</div>
-
-
-
-{/* SUPPORT */}
-
-<div className="bg-white shadow-soft rounded-2xl mt-10 p-6 flex justify-between items-center">
-
-<span>
-
-Need Help?
-
-</span>
-
-<a
-
-href="tel:8219174058"
-
-className="text-primary font-semibold"
+className="w-20 h-20 rounded-full border border-yellow-400 overflow-hidden shadow-lg"
 
 >
 
-8219174058
+<Image
+src="/logo.png"
+alt="logo"
+width={80}
+height={80}
+/>
 
-</a>
+</motion.div>
+
+
+
+{/* HEADLINE */}
+
+<motion.h1
+
+initial={{opacity:0,y:20}}
+
+animate={{opacity:1,y:0}}
+
+transition={{delay:.2}}
+
+className="text-3xl font-semibold text-yellow-400 mt-6"
+
+>
+
+Order Confirmed 🎉
+
+</motion.h1>
+
+
+<p className="text-neutral-400 mt-2 max-w-md">
+
+Your order has been received successfully.
+
+Our delivery partner is preparing your items now.
+
+</p>
+
+
+
+{/* ETA BADGE */}
+
+<div className="mt-4 bg-yellow-400/10 border border-yellow-400 text-yellow-400 px-4 py-2 rounded-full text-sm">
+
+Estimated delivery: 10–20 minutes 🚀
 
 </div>
 
 
 
-{/* CTA */}
+{/* ORDER SUMMARY CARD */}
 
-<div className="flex flex-wrap gap-4 mt-10 justify-center">
+<div className="mt-6 bg-[#020617] border border-white/10 rounded-xl p-5 text-left max-w-md w-full space-y-3">
+
+
+<p>
+
+<span className="text-neutral-400">
+
+Customer:
+
+</span>
+
+&nbsp;
+
+{order.customerName}
+
+</p>
+
+
+<p>
+
+<span className="text-neutral-400">
+
+Hostel:
+
+</span>
+
+&nbsp;
+
+{order.hostel}
+
+</p>
+
+
+<p>
+
+<span className="text-neutral-400">
+
+Room:
+
+</span>
+
+&nbsp;
+
+{order.room}
+
+</p>
+
+
+<p className="text-yellow-400 font-semibold">
+
+Total Paid: ₹ {order.totalAmount}
+
+</p>
+
+
+</div>
+
+
+
+{/* TRACK BUTTON */}
 
 <Link
 
-href="/products"
+href="/orders"
 
-className="bg-primary text-white px-6 py-3 rounded-lg"
+className="mt-6 bg-yellow-400 text-black px-6 py-3 rounded-xl font-semibold shadow-lg hover:scale-[1.03] transition"
 
 >
 
-Continue Shopping
+Track Your Order 📦
 
 </Link>
 
 
-<a
 
-href="https://wa.me/918219174058"
+{/* SUPPORT TEXT */}
 
-target="_blank"
+<p className="text-neutral-500 text-xs mt-6 max-w-sm">
 
-className="border border-primary text-primary px-6 py-3 rounded-lg"
+If your order is delayed or you need help,
 
->
-
-Contact Support
-
-</a>
-
-</div>
-
-
-
-<p className="text-center text-neutral-400 mt-12 text-sm">
-
-Thank you for shopping with Hilaireofficial 💚
+our delivery team will contact you shortly.
 
 </p>
 
-</div>
+
+
+{/* BACK HOME BUTTON */}
+
+<Link
+
+href="/"
+
+className="mt-4 border border-yellow-400 text-yellow-400 px-5 py-2 rounded-xl hover:bg-yellow-400 hover:text-black transition"
+
+>
+
+Back to Home
+
+</Link>
+
 
 </section>
 

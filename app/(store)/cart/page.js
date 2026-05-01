@@ -4,55 +4,71 @@ import { useCartStore } from "@/store/cartStore";
 import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
 import { Trash2 } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function CartPage() {
 
 const cart = useCartStore(state => state.cart);
 
-const addToCart =
-useCartStore(state => state.addToCart);
+const addToCart = useCartStore(state => state.addToCart);
 
-const removeItem =
-useCartStore(state => state.removeItem);
+const removeItem = useCartStore(state => state.removeItem);
 
-const decreaseQty =
-useCartStore(state => state.decreaseQty);
+const decreaseQty = useCartStore(state => state.decreaseQty);
 
 
-const subtotal = cart.reduce(
-(acc, item) =>
-acc + item.price * item.qty,
+/*
+TOTAL ITEMS
+*/
+
+const totalItems = cart.reduce(
+(acc,item)=>acc+item.qty,
 0
 );
 
 
-if (cart.length === 0)
-return (
+/*
+TOTAL PRICE
+*/
 
-<section className="bg-secondary min-h-screen">
+const subtotal = cart.reduce(
+(acc,item)=>acc + item.sellingPrice * item.qty,
+0
+);
 
-<Navbar />
+
+/*
+EMPTY CART
+*/
+
+if(cart.length===0)
+
+return(
+
+<section className="bg-[#020617] min-h-screen text-white">
+
+<Navbar/>
 
 <div className="flex flex-col items-center justify-center py-32 text-center">
 
-<h2 className="text-3xl font-semibold text-primary">
+<h2 className="text-2xl font-semibold">
 
-Your cart is empty
+Cart is empty 🛒
 
 </h2>
 
-<p className="text-neutral-500 mt-2">
+<p className="text-neutral-400 mt-2">
 
-Looks like you haven't added anything yet
+Add something before checkout
 
 </p>
 
 <Link
-href="/products"
-className="mt-6 bg-primary text-white px-7 py-3 rounded-xl shadow-soft hover:scale-[1.02] transition"
+href="/"
+className="mt-6 bg-yellow-400 text-black px-6 py-3 rounded-xl font-semibold shadow-lg"
 >
 
-Continue Shopping
+Browse Items
 
 </Link>
 
@@ -63,72 +79,95 @@ Continue Shopping
 );
 
 
-return (
 
-<section className="bg-secondary min-h-screen">
+return(
 
-<Navbar />
+<section className="bg-[#020617] min-h-screen text-white pb-32">
 
-<div className="max-w-6xl mx-auto px-6 py-16">
+<Navbar/>
 
-<h1 className="text-3xl font-semibold text-primary mb-10">
 
-Shopping Cart
+{/* PAGE TITLE */}
+
+<div className="px-5 pt-6 pb-2">
+
+<h1 className="text-xl font-semibold text-yellow-400">
+
+Your Cart
 
 </h1>
 
+<p className="text-xs text-neutral-400">
 
-<div className="grid md:grid-cols-3 gap-10">
+{totalItems} items selected
+
+</p>
+
+</div>
 
 
-{/* CART ITEMS */}
 
-<div className="md:col-span-2 space-y-6">
+{/* CART LIST */}
 
-{cart.map(item => (
+<div className="px-4 space-y-4">
 
-<div
+{cart.map(item=>(
+
+<motion.div
+
 key={item._id}
-className="bg-white rounded-2xl shadow-soft flex flex-col sm:flex-row gap-6 p-6 items-center"
+
+initial={{opacity:0,y:10}}
+
+animate={{opacity:1,y:0}}
+
+className="flex gap-4 items-center bg-[#020617] border border-white/10 rounded-2xl p-3"
+
 >
 
 
+{/* IMAGE */}
+
 <img
-src={
-item.images?.find(Boolean)
-|| "/placeholder.png"
-}
-className="w-28 h-28 object-cover rounded-xl"
+
+src={item.image || "/placeholder.png"}
+
+className="w-20 h-20 rounded-xl object-contain bg-black/20 p-2"
+
 />
 
+
+{/* DETAILS */}
 
 <div className="flex-1">
 
 
-<h3 className="font-medium text-text text-lg">
+<h3 className="text-sm font-medium line-clamp-2">
 
-{item.title}
+{item.name}
 
 </h3>
 
 
-<p className="text-accent mt-1">
+<p className="text-yellow-400 text-sm font-semibold mt-1">
 
-₹ {item.price}
+₹ {item.sellingPrice}
 
 </p>
 
 
-{/* QUANTITY CONTROLS */}
 
-<div className="flex gap-3 mt-4 items-center">
+{/* QTY CONTROLS */}
+
+<div className="flex items-center gap-2 mt-2">
 
 
 <button
-onClick={() =>
-decreaseQty(item._id)
-}
-className="px-3 py-1 border rounded-lg hover:bg-secondary transition"
+
+onClick={()=>decreaseQty(item._id)}
+
+className="w-8 h-8 rounded-lg border border-white/10 flex items-center justify-center"
+
 >
 
 −
@@ -136,7 +175,7 @@ className="px-3 py-1 border rounded-lg hover:bg-secondary transition"
 </button>
 
 
-<span className="font-medium">
+<span className="text-sm font-semibold">
 
 {item.qty}
 
@@ -144,36 +183,40 @@ className="px-3 py-1 border rounded-lg hover:bg-secondary transition"
 
 
 <button
-onClick={() =>
-addToCart(item)
-}
-className="px-3 py-1 border rounded-lg hover:bg-secondary transition"
+
+onClick={()=>addToCart(item)}
+
+className="w-8 h-8 rounded-lg bg-yellow-400 text-black flex items-center justify-center font-bold"
+
 >
 
 +
 
 </button>
 
-</div>
 
 </div>
 
+</div>
 
-{/* REMOVE BUTTON */}
+
+
+{/* REMOVE */}
 
 <button
-onClick={() =>
-removeItem(item._id)
-}
-className="text-red-500 hover:scale-110 transition"
+
+onClick={()=>removeItem(item._id)}
+
+className="text-red-400"
+
 >
 
-<Trash2 size={20} />
+<Trash2 size={18}/>
 
 </button>
 
 
-</div>
+</motion.div>
 
 ))}
 
@@ -181,73 +224,51 @@ className="text-red-500 hover:scale-110 transition"
 
 
 
-{/* ORDER SUMMARY */}
+{/* STICKY CHECKOUT BAR */}
 
-<div className="bg-white rounded-2xl shadow-soft p-6 h-fit sticky top-24">
+<motion.div
 
+initial={{y:120,opacity:0}}
 
-<h2 className="text-xl font-semibold text-primary mb-6">
+animate={{y:0,opacity:1}}
 
-Order Summary
+className="fixed bottom-0 left-0 w-full bg-[#020617] border-t border-white/10 px-4 py-4 flex items-center justify-between"
 
-</h2>
-
-
-<div className="flex justify-between mb-3 text-neutral-600">
-
-<span>Subtotal</span>
-
-<span>₹ {subtotal}</span>
-
-</div>
+>
 
 
-<div className="flex justify-between mb-6 text-neutral-600">
+<div>
 
-<span>Shipping</span>
+<p className="text-xs text-neutral-400">
 
-<span>Free</span>
+Total
 
-</div>
+</p>
 
+<p className="text-lg font-semibold text-yellow-400">
 
-<hr />
+₹ {subtotal}
 
-
-<div className="flex justify-between text-lg font-semibold mt-6">
-
-<span>Total</span>
-
-<span>₹ {subtotal}</span>
+</p>
 
 </div>
 
 
 <Link
+
 href="/checkout"
-className="mt-6 block text-center bg-primary text-white py-3 rounded-xl shadow-soft hover:scale-[1.02] transition"
+
+className="bg-yellow-400 text-black px-6 py-3 rounded-xl font-semibold shadow-lg"
+
 >
 
-Proceed to Checkout
+Checkout
 
 </Link>
 
 
-<Link
-href="/products"
-className="mt-4 block text-center border border-primary text-primary py-3 rounded-xl hover:bg-primary hover:text-white transition"
->
+</motion.div>
 
-Continue Shopping
-
-</Link>
-
-
-</div>
-
-</div>
-
-</div>
 
 </section>
 

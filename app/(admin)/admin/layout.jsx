@@ -77,6 +77,18 @@ Midnight Admin
 
 <nav className="flex flex-col gap-4 text-sm">
 
+    <Link href="/admin/dashboard">
+
+<div className="flex items-center gap-3 hover:text-yellow-400">
+
+<Package size={18}/>
+
+Dashboard
+
+</div>
+
+</Link>
+
 
 <Link href="/admin/products">
 

@@ -2,300 +2,180 @@
 
 import { useCartStore } from "@/store/cartStore";
 import { useState } from "react";
-import Script from "next/script";
+import Navbar from "@/components/layout/Navbar";
+import { motion } from "framer-motion";
+
+const hostelCharges = {
+"Boys Hostel": 15,
+"Girls Hostel": 10,
+"Library Side": 20,
+"Admin Block": 5,
+"Main Gate": 25
+};
 
 export default function CheckoutPage() {
 
-const cart = useCartStore((state) => state.cart);
+/*
+ZUSTAND STORE ACCESS (INSIDE COMPONENT ONLY)
+*/
+
+const cart = useCartStore(state => state.cart);
+
+const clearCart = useCartStore(state => state.clearCart);
+
+
+/*
+SUBTOTAL
+*/
 
 const subtotal = cart.reduce(
-(acc, item) => acc + item.price * item.qty,
+(acc,item)=>acc + item.sellingPrice * item.qty,
 0
 );
 
-const [form, setForm] = useState({
-name: "",
-phone: "",
-address: "",
-note: ""
+
+/*
+FORM STATE
+*/
+
+const [form,setForm] = useState({
+
+customerName:"",
+phone:"",
+hostel:"",
+room:"",
+note:""
+
 });
 
-const handleChange = (e) => {
+
+/*
+DELIVERY CHARGE
+*/
+
+const deliveryCharge =
+hostelCharges[form.hostel] || 0;
+
+
+/*
+TOTAL
+*/
+
+const totalAmount =
+subtotal + deliveryCharge;
+
+
+/*
+FORM HANDLER
+*/
+
+const handleChange = e => {
 
 setForm({
+
 ...form,
-[e.target.name]: e.target.value
+[e.target.name]:e.target.value
+
 });
 
 };
 
 
-
 /*
-=======================
-ONLINE PAYMENT HANDLER
-=======================
+CREATE ORDER
 */
 
-const handleOrder = async () => {
+const handlePlaceOrder = async () => {
 
-if (!form.name || !form.phone || !form.address) {
-
+if(
+!form.customerName ||
+!form.phone ||
+!form.hostel ||
+!form.room
+){
 alert("Fill required fields");
-
 return;
-
 }
 
-const saveOrder = await fetch("/api/orders/create", {
+const res = await fetch("/api/orders/create", {
 
-method: "POST",
+method:"POST",
 
-headers: {
-"Content-Type": "application/json"
+headers:{
+"Content-Type":"application/json"
 },
 
-body: JSON.stringify({
+body:JSON.stringify({
 
-customerName: form.name,
-phone: form.phone,
-address: form.address,
-note: form.note,
-items: cart,
-totalAmount: subtotal
+...form,
+items: cart.map(item => ({
+productId: item._id,
+title: item.name,
+sellingPrice: item.sellingPrice,
+actualPrice: item.actualPrice,
+qty: item.qty
+})),
+subtotal,
+deliveryCharge,
+totalAmount
 
 })
 
 });
 
-const order = await saveOrder.json();
-
-
-const paymentOrder = await fetch("/api/payment/create-order", {
-
-method: "POST",
-
-headers: {
-"Content-Type": "application/json"
-},
-
-body: JSON.stringify({
-amount: subtotal
-})
-
-});
-
-const razorpayOrder = await paymentOrder.json();
-
-
-if (!window.Razorpay) {
-
-alert("Payment SDK not loaded");
-
-return;
-
-}
-
-
-const options = {
-
-key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-
-amount: razorpayOrder.amount,
-
-currency: "INR",
-
-name: "Hilaire Store",
-
-description: "Order Payment",
-
-order_id: razorpayOrder.id,
-
-handler: async function () {
-
-await fetch("/api/orders/update-payment", {
-
-method: "POST",
-
-headers: {
-"Content-Type": "application/json"
-},
-
-body: JSON.stringify({
-orderId: order._id
-})
-
-});
-
-
-const orderData = {
-
-customerName: form.name,
-phone: form.phone,
-address: form.address,
-
-items: cart,
-
-totalAmount: subtotal,
-
-paymentMethod: "Online Payment",
-
-paymentStatus: "paid",
-
-orderStatus: "placed"
-
-};
-
-localStorage.setItem("lastOrder", JSON.stringify(orderData));
-
-window.location.href = "/order-success";
-
-},
-
-prefill: {
-
-name: form.name,
-contact: form.phone
-
-}
-
-};
-
-
-const rzp = new window.Razorpay(options);
-
-rzp.open();
-
-};
-
+const data = await res.json();
 
 
 /*
-=======================
-COD HANDLER
-=======================
+SAVE ORDER FOR SUCCESS PAGE
 */
 
-const handleCOD = async () => {
-
-if (!form.name || !form.phone || !form.address) {
-
-alert("Fill required fields");
-
-return;
-
-}
-
-await fetch("/api/orders/create", {
-
-method: "POST",
-
-headers: {
-"Content-Type": "application/json"
-},
-
-body: JSON.stringify({
-
-customerName: form.name,
-phone: form.phone,
-address: form.address,
-note: form.note,
-items: cart,
-totalAmount: subtotal,
-paymentStatus: "cod"
-
-})
-
-});
-
-
-const orderData = {
-
-customerName: form.name,
-phone: form.phone,
-address: form.address,
-
-items: cart,
-
-totalAmount: subtotal,
-
-paymentMethod: "Cash on Delivery",
-
-paymentStatus: "cod",
-
-orderStatus: "placed"
-
-};
-
-localStorage.setItem("lastOrder", JSON.stringify(orderData));
-
-window.location.href = "/order-success";
-
-};
-
-
-
-/*
-=======================
-WHATSAPP HANDLER
-=======================
-*/
-
-const handleWhatsApp = () => {
-
-const message = `New Order Request:
-
-Name: ${form.name}
-Phone: ${form.phone}
-Address: ${form.address}
-
-Items:
-${cart.map(item =>
-`${item.title} x ${item.qty}`
-).join("\n")}
-
-Total: ₹${subtotal}`;
-
-window.open(
-
-`https://wa.me/918219174058?text=${encodeURIComponent(message)}`
-
+localStorage.setItem(
+"lastOrder",
+JSON.stringify(data)
 );
 
+
+/*
+CLEAR CART
+*/
+
+clearCart();
+
+
+/*
+REDIRECT
+*/
+
+window.location.href="/order-success";
+
 };
 
 
+return(
 
-return (
+<section className="bg-[#020617] min-h-screen text-white pb-32">
 
-<>
+<Navbar/>
 
-<Script
-src="https://checkout.razorpay.com/v1/checkout.js"
-strategy="afterInteractive"
-/>
-
-
-<section className="bg-secondary min-h-screen">
-
-<div className="max-w-6xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-12">
+<div className="max-w-6xl mx-auto px-4 pt-6 grid md:grid-cols-2 gap-6">
 
 
 {/* CUSTOMER FORM */}
 
-<div className="bg-white rounded-xl shadow-soft p-6">
+<div className="bg-[#020617] border border-white/10 rounded-2xl p-5 space-y-4">
 
-<h2 className="text-xl font-semibold mb-6">
+<h2 className="text-lg text-yellow-400 font-semibold">
 
-Customer Details
+Delivery Details
 
 </h2>
 
 
 <input
-name="name"
+name="customerName"
 placeholder="Full Name"
-className="border p-3 w-full mb-4 rounded-lg"
+className="input-style"
 onChange={handleChange}
 />
 
@@ -303,23 +183,42 @@ onChange={handleChange}
 <input
 name="phone"
 placeholder="Phone Number"
-className="border p-3 w-full mb-4 rounded-lg"
+className="input-style"
 onChange={handleChange}
 />
 
 
-<textarea
-name="address"
-placeholder="Full Address"
-className="border p-3 w-full mb-4 rounded-lg"
+<select
+name="hostel"
+className="input-style"
+onChange={handleChange}
+>
+
+<option value="">
+Select Hostel
+</option>
+
+{Object.keys(hostelCharges).map(hostel=>(
+<option key={hostel}>
+{hostel}
+</option>
+))}
+
+</select>
+
+
+<input
+name="room"
+placeholder="Room Number"
+className="input-style"
 onChange={handleChange}
 />
 
 
 <textarea
 name="note"
-placeholder="Extra note (optional)"
-className="border p-3 w-full rounded-lg"
+placeholder="Extra instructions (optional)"
+className="input-style"
 onChange={handleChange}
 />
 
@@ -329,32 +228,28 @@ onChange={handleChange}
 
 {/* ORDER SUMMARY */}
 
-<div className="bg-white rounded-xl shadow-soft p-6">
+<div className="bg-[#020617] border border-white/10 rounded-2xl p-5">
 
-<h2 className="text-xl font-semibold mb-6">
+<h2 className="text-lg text-yellow-400 font-semibold mb-4">
 
 Order Summary
 
 </h2>
 
 
-{cart.map(item => (
+{cart.map(item=>(
 
 <div
 key={item._id}
-className="flex justify-between mb-3"
+className="flex justify-between mb-2 text-sm"
 >
 
 <span>
-
 {item.title} × {item.qty}
-
 </span>
 
 <span>
-
-₹{item.price * item.qty}
-
+₹ {item.sellingPrice * item.qty}
 </span>
 
 </div>
@@ -362,49 +257,48 @@ className="flex justify-between mb-3"
 ))}
 
 
-<hr className="my-4"/>
+<hr className="my-3 border-white/10"/>
 
 
-<div className="flex justify-between text-lg font-semibold">
+<div className="flex justify-between text-sm">
 
-<span>Total</span>
+<span>Subtotal</span>
 
-<span>₹{subtotal}</span>
+<span>₹ {subtotal}</span>
 
 </div>
 
 
+<div className="flex justify-between text-sm">
 
-<button
-onClick={handleOrder}
-className="bg-primary text-white w-full mt-6 py-3 rounded-lg"
+<span>Delivery Charge</span>
+
+<span>₹ {deliveryCharge}</span>
+
+</div>
+
+
+<hr className="my-3 border-white/10"/>
+
+
+<div className="flex justify-between text-lg font-semibold text-yellow-400">
+
+<span>Total</span>
+
+<span>₹ {totalAmount}</span>
+
+</div>
+
+
+<motion.button
+whileTap={{scale:.95}}
+onClick={handlePlaceOrder}
+className="w-full mt-6 bg-yellow-400 text-black py-3 rounded-xl font-semibold shadow-lg"
 >
 
-Pay Online
+Place Order
 
-</button>
-
-
-
-<button
-onClick={handleCOD}
-className="border border-primary text-primary w-full mt-4 py-3 rounded-lg"
->
-
-Cash on Delivery
-
-</button>
-
-
-
-<button
-onClick={handleWhatsApp}
-className="bg-green-500 text-white w-full mt-4 py-3 rounded-lg"
->
-
-Order via WhatsApp
-
-</button>
+</motion.button>
 
 
 </div>
@@ -412,8 +306,6 @@ Order via WhatsApp
 </div>
 
 </section>
-
-</>
 
 );
 

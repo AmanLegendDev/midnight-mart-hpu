@@ -82,17 +82,11 @@ Midnight Mart
 <div className="hidden md:flex items-center gap-7 text-sm font-medium text-neutral-300">
 
 
-<NavItem
-href="/products"
-icon={<Package size={18}/>}
-label="Products"
-/>
-
 
 <NavItem
 href="/orders"
 icon={<ClipboardList size={18}/>}
-label="Orders"
+label="Track Orders"
 />
 
 
@@ -102,6 +96,7 @@ label="Orders"
 <Link
 href="/cart"
 className="relative group"
+label="cart"
 >
 
 <motion.div
@@ -171,18 +166,13 @@ className="md:hidden bg-[#020617] border-t border-white/10 backdrop-blur-xl"
 <div className="flex flex-col px-6 py-5 gap-5 text-neutral-300">
 
 
-<MobileNavItem
-href="/products"
-icon={<Package size={18}/>}
-label="Products"
-close={()=>setOpen(false)}
-/>
+
 
 
 <MobileNavItem
 href="/orders"
 icon={<ClipboardList size={18}/>}
-label="Orders"
+label="Track Orders"
 close={()=>setOpen(false)}
 />
 

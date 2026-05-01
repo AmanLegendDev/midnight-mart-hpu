@@ -116,36 +116,27 @@ const orderSchema = new mongoose.Schema(
 AUTO PROFIT CALCULATION MIDDLEWARE
 */
 
-orderSchema.pre("save", function (next) {
+orderSchema.pre("save", function () {
 
-  let productProfitTotal = 0;
+let productProfitTotal = 0;
 
-  this.items.forEach((item) => {
+this.items.forEach((item) => {
 
-    const itemProfit =
-      (item.sellingPrice - item.actualPrice) *
-      item.qty;
+const itemProfit =
+(item.sellingPrice - item.actualPrice) *
+item.qty;
 
-    item.profit = itemProfit;
+item.profit = itemProfit;
 
-    productProfitTotal += itemProfit;
+productProfitTotal += itemProfit;
 
-  });
+});
 
+this.productProfit = productProfitTotal;
 
-  this.productProfit = productProfitTotal;
+this.netProfit =
+this.productProfit + this.deliveryCharge;
 
-
-  /*
-  MIDNIGHT MART MODEL:
-  DELIVERY CHARGE = EXTRA PROFIT
-  */
-
-  this.netProfit =
-    this.productProfit + this.deliveryCharge;
-
-
-  next();
 });
 
 
