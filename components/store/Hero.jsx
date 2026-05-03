@@ -8,76 +8,93 @@ export default function Hero() {
 
 return (
 
-<section className="relative min-h-[92vh] flex items-center justify-center overflow-hidden">
+<section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-12 pb-10">
 
-
-{/* STATIC BACKGROUND IMAGE */}
+{/* BACKGROUND IMAGE */}
 
 <Image
 src="/hero/hero-bg-1.jpg"
 fill
 priority
-alt="hero background"
+alt="MidnightMartHPU campus delivery"
 className="object-cover"
 />
 
 
-{/* DARK OVERLAY */}
+{/* DARK GLASS OVERLAY */}
 
-<div className="absolute inset-0 bg-[#020617]/70 backdrop-blur-[2px]" />
+<div className="absolute inset-0 bg-[#020617]/75 backdrop-blur-[2px]" />
 
 
 {/* CONTENT */}
 
-<div className="relative z-10 max-w-3xl px-6 text-center space-y-6">
+<div className="relative z-10 max-w-3xl px-6 text-center space-y-5">
 
 
-<motion.h1
-initial={{opacity:0,y:40}}
+{/* CAMPUS BADGE */}
+
+<motion.div
+initial={{opacity:0,y:10}}
 animate={{opacity:1,y:0}}
-transition={{duration:.7}}
-className="text-4xl md:text-6xl font-semibold text-white leading-tight"
+className="inline-block text-xs px-4 py-1 rounded-full bg-yellow-400/10 border border-yellow-400 text-yellow-400"
 >
 
-Late night cravings?
+Inside HPU Summerhill Campus 🚀
+
+</motion.div>
+
+
+{/* HEADLINE */}
+
+<motion.h1
+initial={{opacity:0,y:30}}
+animate={{opacity:1,y:0}}
+transition={{duration:.6}}
+className="text-3xl md:text-5xl font-semibold text-white leading-snug"
+>
+
+Late Night Bhook Lagi?
 
 <span className="text-yellow-400">
 
-&nbsp;Solved inside campus.
+&nbsp;MidnightMartHPU Deliver Karega.
 
 </span>
 
 </motion.h1>
 
 
+{/* SUBTEXT */}
+
 <motion.p
 initial={{opacity:0}}
 animate={{opacity:1}}
-transition={{delay:.3}}
+transition={{delay:.2}}
 className="text-neutral-300 text-sm md:text-lg max-w-xl mx-auto"
 >
 
-Snacks. Drinks. Essentials.
+Maggi • Cold Drinks • Snacks • Coffee • Essentials
 
-Delivered directly to your hostel room in minutes.
+Hostel gate tak delivery in 10–15 minutes.
 
 </motion.p>
 
 
+{/* CTA BUTTONS */}
+
 <motion.div
 initial={{opacity:0,y:20}}
 animate={{opacity:1,y:0}}
-transition={{delay:.5}}
-className="flex gap-4 justify-center flex-wrap"
+transition={{delay:.4}}
+className="flex gap-3 justify-center flex-wrap"
 >
-
 
 <Link
 href="#categories"
-className="bg-yellow-400 text-black px-7 py-3 rounded-xl font-semibold shadow-xl hover:scale-[1.06] transition"
+className="bg-yellow-400 text-black px-7 py-3 rounded-xl font-semibold shadow-lg hover:scale-[1.05] transition"
 >
 
-Browse Items
+Start Ordering ⚡
 
 </Link>
 
@@ -86,24 +103,28 @@ Browse Items
 href="/custom-order"
 className="border border-yellow-400 text-yellow-400 px-7 py-3 rounded-xl hover:bg-yellow-400 hover:text-black transition"
 >
-
 Custom Order
-
 </Link>
-
 
 </motion.div>
 
 
-<div className="flex gap-6 justify-center text-xs text-neutral-400">
+{/* TRUST STRIP */}
 
-<span>⚡ 10–20 min delivery</span>
+<motion.div
+initial={{opacity:0}}
+animate={{opacity:1}}
+transition={{delay:.6}}
+className="flex gap-5 justify-center text-xs text-neutral-400"
+>
 
-<span>🏫 HPU campus only</span>
+<span>⚡ 10–15 min delivery</span>
 
-<span>🌙 Midnight active</span>
+<span>🏫 All HPU hostels covered</span>
 
-</div>
+<span>🌙 Late night active</span>
+
+</motion.div>
 
 
 </div>

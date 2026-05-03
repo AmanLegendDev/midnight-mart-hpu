@@ -49,6 +49,22 @@ export async function getCategories() {
 
 }
 
+export async function updateCategory(id, name, image){
+
+await connectDB();
+
+const slug = slugify(name, { lower:true });
+
+await Category.findByIdAndUpdate(id,{
+name,
+slug,
+image
+});
+
+return { success:true };
+
+}
+
 export async function deleteCategory(id) {
   await connectDB();
 

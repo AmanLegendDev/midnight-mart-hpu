@@ -7,7 +7,7 @@ export function proxy(req) {
   if (req.nextUrl.pathname.startsWith("/admin/dashboard")) {
     if (!token) {
       return NextResponse.redirect(
-        new URL("/admin/login", req.url)
+        new URL("/admin-login", req.url)
       );
     }
 
@@ -15,7 +15,7 @@ export function proxy(req) {
       jwt.verify(token, process.env.JWT_SECRET);
     } catch {
       return NextResponse.redirect(
-        new URL("/admin/login", req.url)
+        new URL("/admin-login", req.url)
       );
     }
   }

@@ -1,10 +1,10 @@
 import { connectDB } from "@/lib/db";
 import Order from "@/models/Order";
+import CustomOrder from "@/models/CustomOrder";
 
-export async function GET() {
+export async function GET(){
 
 await connectDB();
-
 
 /*
 TODAY RANGE (12AM → 12AM)
@@ -37,6 +37,14 @@ const completedOrders =
 await Order.countDocuments({
 orderStatus:"delivered"
 });
+
+
+/*
+CUSTOM ORDERS COUNT
+*/
+
+const customOrders =
+await CustomOrder.countDocuments();
 
 
 /*
@@ -94,8 +102,10 @@ return Response.json({
 newOrders,
 processingOrders,
 completedOrders,
+customOrders,
 
 todayOrders:todayOrders.length,
+
 todayRevenue,
 todayProfit,
 

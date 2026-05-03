@@ -37,8 +37,8 @@ if(onSelect) onSelect(id);
 return(
 
 <section
-id="categories"
-className="bg-[#020617] sticky top-[64px] z-40 border-b border-white/5"
+href="#products"
+className="bg-[#020617] border-b border-white/5 pt-2 pb-2 scroll-mt-24"
 >
 
 

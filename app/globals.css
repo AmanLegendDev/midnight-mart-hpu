@@ -119,6 +119,9 @@ UPLOAD BOX
   color: #9ca3af;
 
 }
+html {
+scroll-behavior: smooth;
+}
 
 
 /*

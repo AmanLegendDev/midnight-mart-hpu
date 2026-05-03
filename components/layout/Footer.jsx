@@ -4,97 +4,124 @@ export default function Footer() {
 
 return (
 
-<footer className="bg-white border-t mt-20">
+<footer className="bg-[#0B0F19] border-t border-white/5 mt-10">
 
-<div className="max-w-7xl mx-auto px-6 py-14 grid md:grid-cols-4 gap-10">
+<div className="max-w-7xl mx-auto px-6 py-12 grid md:grid-cols-4 gap-10">
 
 
 {/* BRAND */}
 
 <div>
 
-<h2 className="text-primary text-xl font-semibold">
+<h2 className="text-yellow-400 text-lg font-semibold">
 
-Hilaireofficial
+MidnightMartHPU
 
 </h2>
 
-<p className="text-neutral-500 mt-3 text-sm">
+<p className="text-neutral-400 mt-3 text-sm">
 
-Premium beauty essentials crafted for confidence and elegance.
+Late night hostel delivery inside HPU Summerhill campus.
+
+Fast • Reliable • Student-friendly
 
 </p>
 
 </div>
 
 
-{/* SHOP */}
+
+{/* QUICK LINKS */}
 
 <div>
 
-<h3 className="font-semibold mb-3">
+<h3 className="font-semibold mb-3 text-white">
 
-Shop
+Quick Links
 
 </h3>
 
-<div className="flex flex-col gap-2 text-sm text-neutral-500">
+<div className="flex flex-col gap-2 text-sm text-neutral-400">
 
-<Link href="/products">All Products</Link>
+<Link href="/">Home</Link>
 
-<Link href="/cart">Cart</Link>
+<Link href="#categories">Categories</Link>
 
-<Link href="/checkout">Checkout</Link>
+<Link href="/orders">Track Order</Link>
+
+<a
+href="https://wa.me/918219174058"
+target="_blank"
+>
+
+Custom Order
+
+</a>
 
 </div>
 
 </div>
 
 
-{/* SUPPORT */}
+
+{/* DELIVERY INFO */}
 
 <div>
 
-<h3 className="font-semibold mb-3">
+<h3 className="font-semibold mb-3 text-white">
 
-Support
+Delivery Info
 
 </h3>
 
-<div className="flex flex-col gap-2 text-sm text-neutral-500">
+<div className="flex flex-col gap-2 text-sm text-neutral-400">
 
-<p>Shipping Policy</p>
+<p>⚡ 10–15 min delivery</p>
 
-<p>Return Policy</p>
+<p>🏫 Inside HPU campus only</p>
 
-<p>Privacy Policy</p>
+<p>🌙 Midnight service active</p>
+
+</div>
 
 </div>
 
-</div>
 
 
 {/* CONTACT */}
 
 <div>
 
-<h3 className="font-semibold mb-3">
+<h3 className="font-semibold mb-3 text-white">
 
-Contact
+Contact Support
 
 </h3>
 
-<p className="text-sm text-neutral-500">
+<div className="flex flex-col gap-2 text-sm text-neutral-400">
 
-Shimla, Himachal Pradesh
+<p>Shimla • HPU Summerhill</p>
 
-</p>
+<a
+href="tel:8219174058"
+className="hover:text-yellow-400 transition"
+>
 
-<p className="text-sm text-neutral-500 mt-1">
+📞 +91 8219174058
 
-+91 8219174058
+</a>
 
-</p>
+<a
+href="https://wa.me/918219174058"
+target="_blank"
+className="hover:text-yellow-400 transition"
+>
+
+💬 WhatsApp Support
+
+</a>
+
+</div>
 
 </div>
 
@@ -102,11 +129,15 @@ Shimla, Himachal Pradesh
 </div>
 
 
-<div className="text-center text-xs text-neutral-400 pb-6">
 
-© {new Date().getFullYear()} Hilaireofficial. All rights reserved.
+{/* COPYRIGHT STRIP */}
+
+<div className="text-center text-xs text-neutral-500 pb-6">
+
+© {new Date().getFullYear()} MidnightMartHPU — Built for HPU Students 🚀
 
 </div>
+
 
 </footer>
 

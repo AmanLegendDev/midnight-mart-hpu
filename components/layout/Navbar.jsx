@@ -2,14 +2,19 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 import {
 Menu,
 X,
 ShoppingCart,
 Package,
-ClipboardList
+ClipboardList,
+Search
 } from "lucide-react";
+
+
+import SearchOverlay from "@/components/store/SearchOverlay";
 
 import {
 motion,
@@ -20,9 +25,12 @@ import {
 useCartStore
 } from "@/store/cartStore";
 
+
 export default function Navbar() {
+    const pathname = usePathname();
 
 const [open,setOpen]=useState(false);
+const [searchOpen,setSearchOpen]=useState(false);
 
 const cart = useCartStore(
 state=>state.cart
@@ -35,6 +43,7 @@ const totalItems = cart.reduce(
 
 
 return (
+    <>
 
 <nav className="sticky top-0 z-50 backdrop-blur-xl bg-[#020617]/90 border-b border-white/10 shadow-lg">
 
@@ -79,8 +88,22 @@ Midnight Mart
 
 {/* DESKTOP MENU */}
 
-<div className="hidden md:flex items-center gap-7 text-sm font-medium text-neutral-300">
+<div className="hidden md:flex items-center gap-6 text-sm font-medium text-neutral-300">
 
+    <button
+onClick={()=>{
+if(pathname==="/" || pathname.startsWith("/category")){
+setSearchOpen(true);
+}
+}}
+className={`transition ${
+pathname==="/" || pathname.startsWith("/category")
+? "hover:text-yellow-400 cursor-pointer"
+: "opacity-40 cursor-not-allowed"
+}`}
+>
+<Search size={20}/>
+</button>
 
 
 <NavItem
@@ -132,14 +155,31 @@ className="absolute -top-2 -right-2 bg-yellow-400 text-black text-[10px] px-1.5 
 
 {/* MOBILE BUTTON */}
 
+<div className="flex items-center gap-4 md:hidden">
+
+<button
+onClick={()=>{
+if(pathname==="/" || pathname.startsWith("/category")){
+setSearchOpen(true);
+}
+}}
+className={`transition ${
+pathname==="/" || pathname.startsWith("/category")
+? "hover:text-yellow-400 cursor-pointer"
+: "opacity-40 cursor-not-allowed"
+}`}
+>
+<Search size={22}/>
+</button>
+
 <button
 onClick={()=>setOpen(!open)}
-className="md:hidden text-yellow-400"
+className="text-yellow-400"
 >
-
 {open ? <X size={24}/> : <Menu size={24}/>}
-
 </button>
+
+</div>
 
 
 </div>
@@ -194,10 +234,17 @@ close={()=>setOpen(false)}
 </AnimatePresence>
 
 </nav>
+<SearchOverlay
+open={searchOpen}
+onClose={()=>setSearchOpen(false)}
+/>
+
+</>
 
 );
 
 }
+
 
 
 

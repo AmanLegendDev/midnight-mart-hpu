@@ -2,13 +2,30 @@
 
 import { useEffect,useState } from "react";
 import { motion,AnimatePresence } from "framer-motion";
-import { Trash2,Plus,X,Upload } from "lucide-react";
+import { Trash2,Plus,X,Upload,Edit } from "lucide-react";
 
 export default function CategoriesPage(){
+
+/*
+CREATE STATES
+*/
 
 const [name,setName]=useState("");
 const [image,setImage]=useState("");
 const [uploading,setUploading]=useState(false);
+
+/*
+EDIT STATES
+*/
+
+const [editing,setEditing]=useState(null);
+const [editName,setEditName]=useState("");
+const [editImage,setEditImage]=useState("");
+const [editUploading,setEditUploading]=useState(false);
+
+/*
+DATA
+*/
 
 const [categories,setCategories]=useState([]);
 const [popup,setPopup]=useState(null);
@@ -36,7 +53,7 @@ fetchCategories();
 
 
 /*
-UPLOAD IMAGE
+UPLOAD IMAGE (CREATE)
 */
 
 const uploadImage=async(e)=>{
@@ -52,10 +69,8 @@ const fd=new FormData();
 fd.append("file",file);
 
 const res=await fetch("/api/upload",{
-
 method:"POST",
 body:fd
-
 });
 
 const data=await res.json();
@@ -67,6 +82,40 @@ setImage(data.url);
 }
 
 setUploading(false);
+
+};
+
+
+/*
+UPLOAD IMAGE (EDIT)
+*/
+
+const uploadEditImage=async(e)=>{
+
+const file=e.target.files[0];
+
+if(!file)return;
+
+setEditUploading(true);
+
+const fd=new FormData();
+
+fd.append("file",file);
+
+const res=await fetch("/api/upload",{
+method:"POST",
+body:fd
+});
+
+const data=await res.json();
+
+if(data?.url){
+
+setEditImage(data.url);
+
+}
+
+setEditUploading(false);
 
 };
 
@@ -99,10 +148,8 @@ headers:{
 },
 
 body:JSON.stringify({
-
 name,
 image
-
 })
 
 });
@@ -153,14 +200,60 @@ headers:{
 },
 
 body:JSON.stringify({
-
 id:popup.id
-
 })
 
 });
 
 setPopup(null);
+
+fetchCategories();
+
+};
+
+
+/*
+START EDIT
+*/
+
+const startEdit=(cat)=>{
+
+setEditing(cat);
+
+setEditName(cat.name);
+
+setEditImage(cat.image || "");
+
+};
+
+
+/*
+UPDATE CATEGORY
+*/
+
+const updateCategory=async()=>{
+
+if(!editName.trim())return;
+
+await fetch("/api/categories/update",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+id:editing._id,
+name:editName,
+image:editImage
+
+})
+
+});
+
+setEditing(null);
 
 fetchCategories();
 
@@ -197,19 +290,12 @@ Homepage slider categories
 
 
 <input
-
 value={name}
-
 onChange={(e)=>setName(e.target.value)}
-
 placeholder="Category name"
-
 className="input-style"
-
 />
 
-
-{/* IMAGE UPLOAD */}
 
 <label className="upload-box">
 
@@ -218,13 +304,9 @@ className="input-style"
 Upload Category Image
 
 <input
-
 type="file"
-
 hidden
-
 onChange={uploadImage}
-
 />
 
 </label>
@@ -241,26 +323,18 @@ Uploading...
 )}
 
 
-{/* IMAGE PREVIEW */}
-
 {image &&(
 
 <div className="relative w-24">
 
 <img
-
 src={image}
-
 className="rounded-lg"
-
 />
 
 <button
-
 onClick={removeImage}
-
 className="absolute -top-2 -right-2 bg-red-500 p-1 rounded-full"
-
 >
 
 <X size={14}/>
@@ -273,11 +347,8 @@ className="absolute -top-2 -right-2 bg-red-500 p-1 rounded-full"
 
 
 <button
-
 onClick={createCategory}
-
 className="bg-yellow-400 text-black py-2 rounded-xl font-semibold flex items-center justify-center gap-2"
-
 >
 
 <Plus size={16}/>
@@ -297,35 +368,24 @@ Create Category
 {categories.map((cat,index)=>(
 
 <motion.div
-
 key={cat._id}
-
 initial={{opacity:0,y:10}}
-
 animate={{opacity:1,y:0}}
-
 transition={{delay:index*0.05}}
-
 className="card flex items-center justify-between p-3"
-
 >
 
 
 <div className="flex items-center gap-2">
 
-
 {cat.image &&(
 
 <img
-
 src={cat.image}
-
 className="w-10 h-10 rounded-full object-cover"
-
 />
 
 )}
-
 
 <span>
 
@@ -336,17 +396,31 @@ className="w-10 h-10 rounded-full object-cover"
 </div>
 
 
+<div className="flex gap-2">
+
+
 <button
+onClick={()=>startEdit(cat)}
+className="text-yellow-400"
+>
 
+<Edit size={18}/>
+
+</button>
+
+
+<button
 onClick={()=>deleteCategory(cat._id)}
-
 className="text-red-400"
-
 >
 
 <Trash2 size={18}/>
 
 </button>
+
+
+</div>
+
 
 </motion.div>
 
@@ -356,40 +430,26 @@ className="text-red-400"
 </div>
 
 
-{/* POPUP */}
+{/* DELETE POPUP */}
 
 <AnimatePresence>
 
-{popup &&(
+{popup && popup.type==="delete" &&(
 
 <motion.div
-
 initial={{opacity:0}}
-
 animate={{opacity:1}}
-
 exit={{opacity:0}}
-
 className="fixed inset-0 flex items-center justify-center bg-black/70 z-50"
-
 >
 
 <motion.div
-
 initial={{scale:0.8}}
-
 animate={{scale:1}}
-
 exit={{scale:0.8}}
-
 className="card p-6 space-y-4 max-w-sm"
-
 >
 
-
-{popup.type==="delete" &&(
-
-<>
 
 <h2 className="text-lg font-semibold">
 
@@ -401,11 +461,8 @@ Delete category permanently?
 <div className="flex gap-3">
 
 <button
-
 onClick={confirmDelete}
-
 className="flex-1 bg-red-500 py-2 rounded-lg"
-
 >
 
 Delete
@@ -414,11 +471,8 @@ Delete
 
 
 <button
-
 onClick={()=>setPopup(null)}
-
 className="flex-1 bg-neutral-700 py-2 rounded-lg"
-
 >
 
 Cancel
@@ -427,37 +481,122 @@ Cancel
 
 </div>
 
-</>
+
+</motion.div>
+
+</motion.div>
 
 )}
 
+</AnimatePresence>
 
-{popup.type==="error" &&(
 
-<>
+{/* EDIT POPUP */}
 
-<h2 className="text-lg font-semibold">
+<AnimatePresence>
 
-{popup.message}
+{editing &&(
+
+<motion.div
+initial={{opacity:0}}
+animate={{opacity:1}}
+exit={{opacity:0}}
+className="fixed inset-0 flex items-center justify-center bg-black/70 z-50"
+>
+
+<motion.div
+initial={{scale:.8}}
+animate={{scale:1}}
+exit={{scale:.8}}
+className="card p-6 space-y-4 max-w-sm w-full"
+>
+
+
+<h2 className="text-lg font-semibold text-yellow-400">
+
+Edit Category
 
 </h2>
 
 
+<input
+value={editName}
+onChange={(e)=>setEditName(e.target.value)}
+className="input-style"
+/>
+
+
+<label className="upload-box">
+
+<Upload size={18}/>
+
+Change Image
+
+<input
+type="file"
+hidden
+onChange={uploadEditImage}
+/>
+
+</label>
+
+
+{editUploading &&(
+
+<p className="text-sm text-neutral-400">
+
+Uploading...
+
+</p>
+
+)}
+
+
+{editImage &&(
+
+<div className="relative w-24">
+
+<img
+src={editImage}
+className="rounded-lg"
+/>
+
 <button
-
-onClick={()=>setPopup(null)}
-
-className="w-full bg-yellow-400 py-2 rounded-lg text-black"
-
+onClick={()=>setEditImage("")}
+className="absolute -top-2 -right-2 bg-red-500 p-1 rounded-full"
 >
 
-OK
+<X size={14}/>
 
 </button>
 
-</>
+</div>
 
 )}
+
+
+<div className="flex gap-3">
+
+<button
+onClick={updateCategory}
+className="flex-1 bg-yellow-400 text-black py-2 rounded-lg"
+>
+
+Update
+
+</button>
+
+
+<button
+onClick={()=>setEditing(null)}
+className="flex-1 bg-neutral-700 py-2 rounded-lg"
+>
+
+Cancel
+
+</button>
+
+</div>
 
 
 </motion.div>

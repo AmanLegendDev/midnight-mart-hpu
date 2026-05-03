@@ -5,16 +5,15 @@ import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
 import { Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
+import FreebieProgress from "@/components/store/FreebieProgress";
 
-export default function CartPage() {
+export default function CartPage(){
 
-const cart = useCartStore(state => state.cart);
+const cart = useCartStore(state=>state.cart);
 
-const addToCart = useCartStore(state => state.addToCart);
-
-const removeItem = useCartStore(state => state.removeItem);
-
-const decreaseQty = useCartStore(state => state.decreaseQty);
+const addToCart = useCartStore(state=>state.addToCart);
+const removeItem = useCartStore(state=>state.removeItem);
+const decreaseQty = useCartStore(state=>state.decreaseQty);
 
 
 /*
@@ -59,7 +58,7 @@ Cart is empty 🛒
 
 <p className="text-neutral-400 mt-2">
 
-Add something before checkout
+Add snacks to unlock FREE rewards 🎁
 
 </p>
 
@@ -87,7 +86,7 @@ return(
 <Navbar/>
 
 
-{/* PAGE TITLE */}
+{/* HEADER */}
 
 <div className="px-5 pt-6 pb-2">
 
@@ -106,10 +105,30 @@ Your Cart
 </div>
 
 
+{/* FREEBIE PROGRESS */}
+
+<FreebieProgress/>
+
+
+{/* REWARD HINT STRIP */}
+
+<div className="px-4 mt-3">
+
+<div className="bg-[#111827] border border-yellow-400/20 rounded-xl px-4 py-3 text-xs text-neutral-300">
+
+🎁 Unlock FREE Lollipop @ ₹150  
+🍪 FREE Biscuit @ ₹300  
+🧃 FREE Slice Bottle @ ₹500
+
+</div>
+
+</div>
+
+
 
 {/* CART LIST */}
 
-<div className="px-4 space-y-4">
+<div className="px-4 mt-4 space-y-4">
 
 {cart.map(item=>(
 
@@ -121,7 +140,7 @@ initial={{opacity:0,y:10}}
 
 animate={{opacity:1,y:0}}
 
-className="flex gap-4 items-center bg-[#020617] border border-white/10 rounded-2xl p-3"
+className="flex gap-4 items-center bg-[#111827] border border-white/10 rounded-2xl p-3"
 
 >
 
@@ -152,6 +171,13 @@ className="w-20 h-20 rounded-xl object-contain bg-black/20 p-2"
 <p className="text-yellow-400 text-sm font-semibold mt-1">
 
 ₹ {item.sellingPrice}
+
+</p>
+
+
+<p className="text-[11px] text-neutral-400">
+
+Item total ₹ {item.qty * item.sellingPrice}
 
 </p>
 
@@ -232,7 +258,7 @@ initial={{y:120,opacity:0}}
 
 animate={{y:0,opacity:1}}
 
-className="fixed bottom-0 left-0 w-full bg-[#020617] border-t border-white/10 px-4 py-4 flex items-center justify-between"
+className="fixed bottom-0 left-0 w-full bg-[#020617] border-t border-white/10 px-4 py-4 flex items-center justify-between shadow-xl"
 
 >
 
@@ -241,7 +267,7 @@ className="fixed bottom-0 left-0 w-full bg-[#020617] border-t border-white/10 px
 
 <p className="text-xs text-neutral-400">
 
-Total
+Subtotal
 
 </p>
 
@@ -258,11 +284,11 @@ Total
 
 href="/checkout"
 
-className="bg-yellow-400 text-black px-6 py-3 rounded-xl font-semibold shadow-lg"
+className="bg-yellow-400 text-black px-6 py-3 rounded-xl font-semibold shadow-lg active:scale-95 transition"
 
 >
 
-Checkout
+Checkout →
 
 </Link>
 

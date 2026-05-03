@@ -7,6 +7,9 @@ Clock,
 Truck,
 CheckCircle,
 TrendingUp,
+PackagePlus,
+IndianRupee,
+ClipboardList,
 Wallet,
 Package
 } from "lucide-react";
@@ -94,6 +97,13 @@ title="Completed"
 value={stats.completedOrders}
 icon={<CheckCircle size={22}/>}
 link="/admin/orders"
+/>
+
+<OrderCard
+title="Custom Orders"
+value={stats.customOrders}
+icon={<PackagePlus size={22}/>}
+link="/admin/custom-orders"
 />
 
 </div>

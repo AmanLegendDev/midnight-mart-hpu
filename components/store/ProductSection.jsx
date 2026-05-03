@@ -36,6 +36,58 @@ useEffect(()=>{
 
 const listener=(e)=>{
 
+const id = e.detail;
+
+let tries = 0;
+
+const checkElement = setInterval(()=>{
+
+const el = document.getElementById(id);
+
+if(el){
+
+el.scrollIntoView({
+behavior:"smooth",
+block:"center"
+});
+
+clearInterval(checkElement);
+
+}
+
+tries++;
+
+if(tries>15){
+
+clearInterval(checkElement);
+
+}
+
+},100);
+
+};
+
+window.addEventListener(
+"scrollToProduct",
+listener
+);
+
+return ()=>{
+
+window.removeEventListener(
+"scrollToProduct",
+listener
+);
+
+};
+
+},[]);
+
+
+useEffect(()=>{
+
+const listener=(e)=>{
+
 const categoryId=e.detail;
 
 if(categoryId==="all"){
@@ -93,7 +145,7 @@ const totalPrice = cart.reduce(
 
 return(
 
-<section className="bg-[#020617] text-white px-4 pt-2 pb-32 mt-6">
+<section  id="products" className="bg-[#020617] text-white px-4 pt-2 pb-32 mt-6">
 
 
 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -105,7 +157,7 @@ const qty = getQty(product._id);
 
 return(
 
-<div
+<div id={product._id}
 key={product._id}
 className="bg-[#020617] border border-white/10 rounded-2xl p-3 shadow-md hover:border-yellow-400 transition flex flex-col"
 >
@@ -118,6 +170,7 @@ className="bg-[#020617] border border-white/10 rounded-2xl p-3 shadow-md hover:b
 <Image
 src={product.image}
 fill
+sizes="(max-width:768px) 50vw, 25vw"
 alt={product.name}
 className="object-contain p-3"
 />
