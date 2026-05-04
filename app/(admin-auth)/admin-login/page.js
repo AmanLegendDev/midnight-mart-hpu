@@ -162,7 +162,7 @@ className="w-full bg-yellow-400 text-black py-3 rounded-lg font-semibold hover:s
 
 <p className="text-[11px] text-neutral-500 text-center mt-6">
 
-Authorized access only • MidnightMartHPU Delivery Panel
+Authorized access only • MidnightMartHPU Delivery Panel access
 
 </p>
 
